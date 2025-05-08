@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Catatan Karung PT Weisheng Plastic</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    label, input { display: block; width: 100%; max-width: 300px; margin-bottom: 10px; }
+    input { padding: 5px; }
+    button { padding: 8px 12px; margin-top: 10px; }
+    .total { font-weight: bold; margin-top: 20px; }
+    button.hapus { background-color: #ff6666; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h2>Catatan Karung PT Weisheng Plastic</h2>
+
+  <div>
+    <label>Tanggal:
+      <input type="date" id="tanggal">
+    </label>
+
+    <label>Jenis Karung:
+      <input type="text" id="jenisKarung" placeholder="Contoh: Tali Panjang Sablon">
+    </label>
+
+    <label>Jumlah Karung:
+      <input type="number" id="jumlahKarung" min="0">
+    </label>
+
+    <label>Harga per Karung:
+      <input type="number" id="hargaKarung" min="0">
+    </label>
+
+    <button onclick="tambahCatatan()">Tambah</button>
+  </div>
+
+  <table id="tabelCatatan">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Jenis Karung</th>
+        <th>Jumlah Karung</th>
+        <th>Harga per Karung</th>
+        <th>Jumlah Total (Rp)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="total" id="totalKeseluruhan">Total Keseluruhan: Rp 0</div>
+
+  <script>
+    let totalKeseluruhan = 0;
+
+    function formatRupiah(nilai) {
+      return 'Rp ' + nilai.toLocaleString();
+    }
+
+    function tambahCatatan() {
+      const tanggal = document.getElementById('tanggal').value;
+      const jenisKarung = document.getElementById('jenisKarung').value;
+      const jumlahKarung = parseInt(document.getElementById('jumlahKarung').value);
+      const hargaKarung = parseInt(document.getElementById('hargaKarung').value);
+
+      if (!tanggal || !jenisKarung || isNaN(jumlahKarung) || isNaN(hargaKarung)) {
+        alert("Isi semua kolom dengan benar.");
+        return;
+      }
+
+      const jumlahTotal = jumlahKarung * hargaKarung;
+      totalKeseluruhan += jumlahTotal;
+
+      const tbody = document.querySelector('#tabelCatatan tbody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td>${tanggal}</td>
+        <td>${jenisKarung}</td>
+        <td>${jumlahKarung}</td>
+        <td>${formatRupiah(hargaKarung)}</td>
+        <td class="totalHari">${jumlahTotal}</td>
+        <td><button class="hapus" onclick="hapusBaris(this)">Hapus</button></td>
+      `;
+      tbody.appendChild(row);
+
+      updateTotalKeseluruhan();
+
+      // Reset input
+      document.getElementById('tanggal').value = '';
+      document.getElementById('jenisKarung').value = '';
+      document.getElementById('jumlahKarung').value = '';
+      document.getElementById('hargaKarung').value = '';
+    }
+
+    function hapusBaris(tombol) {
+      const row = tombol.parentNode.parentNode;
+      const jumlah = parseInt(row.querySelector('.totalHari').textContent);
+      totalKeseluruhan -= jumlah;
+      row.remove();
+      updateTotalKeseluruhan();
+    }
+
+    function updateTotalKeseluruhan() {
+      document.getElementById('totalKeseluruhan').innerText =
+        'Total Keseluruhan: ' + formatRupiah(totalKeseluruhan);
+    }
+  </script>
+
+</body>
+</html>
